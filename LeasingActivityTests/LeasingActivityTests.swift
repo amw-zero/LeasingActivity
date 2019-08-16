@@ -31,10 +31,16 @@ extension DealShell {
     }
 }
 
+func makeDealShell(isResponseSuccessful: Bool = true) -> DealShell {
+    let repository = ServerRepository()
+    repository.successfulResponse = isResponseSuccessful
+    
+    return DealShell(repository: repository)
+}
+
 class LeasingActivityTests: XCTestCase {
     func testCreatingADealSuccessfully() {
-        let repository = ServerRepository()
-        let shell = DealShell(repository: repository)
+        let shell = makeDealShell()
         
         shell.createDeal(requirementSize: 1000)
         
@@ -42,9 +48,7 @@ class LeasingActivityTests: XCTestCase {
     }
     
     func testCreatingADealError() {
-        let repository = ServerRepository()
-        repository.successfulResponse = false
-        let shell = DealShell(repository: repository)
+        let shell = makeDealShell(isResponseSuccessful: false)
         
         shell.createDeal(requirementSize: 1000)
         
