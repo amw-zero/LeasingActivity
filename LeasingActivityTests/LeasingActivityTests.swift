@@ -9,6 +9,18 @@
 import XCTest
 @testable import LeasingActivity
 
+class DealShell {
+    func createDeal(requirementSize: Int) {
+        
+    }
+}
+
+extension DealShell {
+    func hasDeal(requirementSize: Int) -> Bool {
+        return true
+    }
+}
+
 class LeasingActivityTests: XCTestCase {
     func testCreatingADeal() {
         let shell = DealShell()
