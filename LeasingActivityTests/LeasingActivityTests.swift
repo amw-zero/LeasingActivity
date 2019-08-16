@@ -9,18 +9,6 @@
 import XCTest
 @testable import LeasingActivity
 
-struct StubServerRepository: ServerRepository {
-    var successfulResponse: Bool = true
-    
-    func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void) {
-        if successfulResponse {
-            onComplete(.success(Deal(id: 1, requirementSize: requirementSize)))
-        } else {
-            onComplete(.error)
-        }
-    }
-}
-
 extension DealShell {
     func hasDeal(id: Int) -> Bool {
         deals.contains { $0.id == id }
