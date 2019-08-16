@@ -9,22 +9,6 @@
 import XCTest
 @testable import LeasingActivity
 
-enum NetworkResult<T> {
-    case error
-    case success(T)
-}
-
-struct Deal {
-    let id: Int?
-    let requirementSize: Int
-}
-
-protocol ServerRepository {
-    var successfulResponse: Bool { get set }
-    
-    func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void)
-}
-
 struct StubServerRepository: ServerRepository {
     var successfulResponse: Bool = true
     
@@ -33,26 +17,6 @@ struct StubServerRepository: ServerRepository {
             onComplete(.success(Deal(id: 1, requirementSize: requirementSize)))
         } else {
             onComplete(.error)
-        }
-    }
-}
-
-class DealShell {
-    let repository: ServerRepository
-    var deals: [Deal] = []
-    
-    init(repository: ServerRepository) {
-        self.repository = repository
-    }
-    
-    func createDeal(requirementSize: Int) {
-        repository.createDeal(requirementSize: requirementSize) { result in
-            switch result {
-            case let .success(deal):
-                deals.append(deal)
-            default:
-                break
-            }
         }
     }
 }

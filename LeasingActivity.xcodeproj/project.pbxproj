@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		A51FEBBB230643920050188D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51FEBBA230643920050188D /* AppDelegate.swift */; };
 		A51FEBBD230643920050188D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51FEBBC230643920050188D /* SceneDelegate.swift */; };
-		A51FEBBF230643920050188D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51FEBBE230643920050188D /* ContentView.swift */; };
+		A51FEBBF230643920050188D /* DealsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51FEBBE230643920050188D /* DealsView.swift */; };
 		A51FEBC1230643930050188D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A51FEBC0230643930050188D /* Assets.xcassets */; };
 		A51FEBC4230643930050188D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A51FEBC3230643930050188D /* Preview Assets.xcassets */; };
 		A51FEBC7230643930050188D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A51FEBC5230643930050188D /* LaunchScreen.storyboard */; };
@@ -38,7 +38,7 @@
 		A51FEBB7230643920050188D /* LeasingActivity.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LeasingActivity.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A51FEBBA230643920050188D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A51FEBBC230643920050188D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		A51FEBBE230643920050188D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A51FEBBE230643920050188D /* DealsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealsView.swift; sourceTree = "<group>"; };
 		A51FEBC0230643930050188D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A51FEBC3230643930050188D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A51FEBC6230643930050188D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 			children = (
 				A51FEBBA230643920050188D /* AppDelegate.swift */,
 				A51FEBBC230643920050188D /* SceneDelegate.swift */,
-				A51FEBBE230643920050188D /* ContentView.swift */,
+				A51FEBBE230643920050188D /* DealsView.swift */,
 				A51FEBC0230643930050188D /* Assets.xcassets */,
 				A51FEBC5230643930050188D /* LaunchScreen.storyboard */,
 				A51FEBC8230643930050188D /* Info.plist */,
@@ -269,7 +269,7 @@
 			files = (
 				A51FEBBB230643920050188D /* AppDelegate.swift in Sources */,
 				A51FEBBD230643920050188D /* SceneDelegate.swift in Sources */,
-				A51FEBBF230643920050188D /* ContentView.swift in Sources */,
+				A51FEBBF230643920050188D /* DealsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
