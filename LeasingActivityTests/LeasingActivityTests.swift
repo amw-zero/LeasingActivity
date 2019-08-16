@@ -9,7 +9,17 @@
 import XCTest
 @testable import LeasingActivity
 
+class ServerRepository {
+    var successfulResponse = true
+}
+
 class DealShell {
+    let repository: ServerRepository
+    
+    init(repository: ServerRepository) {
+        self.repository = repository
+    }
+    
     func createDeal(requirementSize: Int) {
         
     }
@@ -22,11 +32,22 @@ extension DealShell {
 }
 
 class LeasingActivityTests: XCTestCase {
-    func testCreatingADeal() {
-        let shell = DealShell()
+    func testCreatingADealSuccessfully() {
+        let repository = ServerRepository()
+        let shell = DealShell(repository: repository)
         
         shell.createDeal(requirementSize: 1000)
         
         XCTAssertTrue(shell.hasDeal(requirementSize: 1000))
+    }
+    
+    func testCreatingADealError() {
+        let repository = ServerRepository()
+        repository.successfulResponse = false
+        let shell = DealShell(repository: repository)
+        
+        shell.createDeal(requirementSize: 1000)
+        
+        XCTAssertFalse(shell.hasDeal(requirementSize: 1000))
     }
 }
