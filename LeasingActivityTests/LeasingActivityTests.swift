@@ -9,8 +9,31 @@
 import XCTest
 @testable import LeasingActivity
 
-class ServerRepository {
-    var successfulResponse = true
+enum NetworkResult<T> {
+    case error
+    case success(T)
+}
+
+struct Deal {
+    let requirementSize: Int
+}
+
+protocol ServerRepository {
+    var successfulResponse: Bool { get set }
+    
+    func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void)
+}
+
+struct StubServerRepository: ServerRepository {
+    var successfulResponse: Bool = true
+    
+    func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void) {
+        if successfulResponse {
+            onComplete(.success(Deal(requirementSize: requirementSize)))
+        } else {
+            onComplete(.error)
+        }
+    }
 }
 
 class DealShell {
@@ -32,7 +55,7 @@ extension DealShell {
 }
 
 func makeDealShell(isResponseSuccessful: Bool = true) -> DealShell {
-    let repository = ServerRepository()
+    var repository = StubServerRepository()
     repository.successfulResponse = isResponseSuccessful
     
     return DealShell(repository: repository)
