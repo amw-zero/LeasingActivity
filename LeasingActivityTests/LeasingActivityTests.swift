@@ -15,6 +15,7 @@ enum NetworkResult<T> {
 }
 
 struct Deal {
+    let id: Int?
     let requirementSize: Int
 }
 
@@ -29,7 +30,7 @@ struct StubServerRepository: ServerRepository {
     
     func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void) {
         if successfulResponse {
-            onComplete(.success(Deal(requirementSize: requirementSize)))
+            onComplete(.success(Deal(id: 1, requirementSize: requirementSize)))
         } else {
             onComplete(.error)
         }
@@ -38,19 +39,27 @@ struct StubServerRepository: ServerRepository {
 
 class DealShell {
     let repository: ServerRepository
+    var deals: [Deal] = []
     
     init(repository: ServerRepository) {
         self.repository = repository
     }
     
     func createDeal(requirementSize: Int) {
-        
+        repository.createDeal(requirementSize: requirementSize) { result in
+            switch result {
+            case let .success(deal):
+                deals.append(deal)
+            default:
+                break
+            }
+        }
     }
 }
 
 extension DealShell {
-    func hasDeal(requirementSize: Int) -> Bool {
-        return true
+    func hasDeal(id: Int) -> Bool {
+        deals.contains { $0.id == id }
     }
 }
 
@@ -67,7 +76,7 @@ class LeasingActivityTests: XCTestCase {
         
         shell.createDeal(requirementSize: 1000)
         
-        XCTAssertTrue(shell.hasDeal(requirementSize: 1000))
+        XCTAssertTrue(shell.hasDeal(id: 1))
     }
     
     func testCreatingADealError() {
@@ -75,6 +84,6 @@ class LeasingActivityTests: XCTestCase {
         
         shell.createDeal(requirementSize: 1000)
         
-        XCTAssertFalse(shell.hasDeal(requirementSize: 1000))
+        XCTAssertFalse(shell.hasDeal(id: 1))
     }
 }
