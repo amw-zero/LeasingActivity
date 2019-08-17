@@ -7,10 +7,16 @@
 //
 
 import SwiftUI
+import Combine
 
 class DealShell {
     let repository: ServerRepository
-    var deals: [Deal] = []
+    var deals: [Deal] = [] {
+        didSet {
+            subscription(deals)
+        }
+    }
+    var subscription: ([Deal]) -> Void = { _ in }
     
     init(repository: ServerRepository) {
         self.repository = repository
@@ -20,10 +26,19 @@ class DealShell {
         repository.createDeal(requirementSize: requirementSize) { result in
             switch result {
             case let .success(deal):
-                deals.append(deal)
+                deals = deals + [deal]
             default:
                 break
             }
+        }
+    }
+}
+
+class ObservableDealShell: ObservableObject {
+    let objectWillChange = PassthroughSubject<[Deal], Never>()
+    var deals: [Deal] = [] {
+        willSet {
+            objectWillChange.send(deals)
         }
     }
 }
@@ -38,6 +53,8 @@ struct Deal {
     let requirementSize: Int
 }
 
+extension Deal: Identifiable { }
+
 protocol ServerRepository {
     var successfulResponse: Bool { get set }
     
@@ -46,10 +63,12 @@ protocol ServerRepository {
 
 struct StubServerRepository: ServerRepository {
     var successfulResponse: Bool = true
+    static var dealCount = 0
     
     func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void) {
         if successfulResponse {
-            onComplete(.success(Deal(id: 1, requirementSize: requirementSize)))
+            StubServerRepository.dealCount += 1
+            onComplete(.success(Deal(id: StubServerRepository.dealCount, requirementSize: requirementSize)))
         } else {
             onComplete(.error)
         }
@@ -57,7 +76,23 @@ struct StubServerRepository: ServerRepository {
 }
 
 struct DealsView: View {
+    @ObservedObject var observed = observableDealShell
+    
     var body: some View {
-        Text("Hello World")
+        VStack {
+            Button(action: { dealShell.createDeal(requirementSize: 200) }) {
+                Text("Create a Deal")
+            }
+            List(observed.deals) { deal in
+                Text(self.dealDescription(for: deal))
+            }
+        }
+    }
+    
+    func dealDescription(for deal: Deal) -> String {
+        return "Deal Id: \(deal.id ?? -1), requirementSize: \(deal.requirementSize)"
     }
 }
+
+let dealShell = DealShell(repository: StubServerRepository())
+let observableDealShell = ObservableDealShell()
