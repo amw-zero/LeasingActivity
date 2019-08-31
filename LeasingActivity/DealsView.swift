@@ -26,7 +26,7 @@ class DealShell {
         repository.createDeal(requirementSize: requirementSize) { result in
             switch result {
             case let .success(deal):
-                deals = deals + [deal]
+                self.deals = self.deals + [deal]
             default:
                 break
             }
@@ -38,7 +38,9 @@ class ObservableDealShell: ObservableObject {
     let objectWillChange = PassthroughSubject<[Deal], Never>()
     var deals: [Deal] = [] {
         willSet {
-            objectWillChange.send(deals)
+            DispatchQueue.main.async {
+                self.objectWillChange.send(self.deals)
+            }
         }
     }
 }
@@ -48,7 +50,7 @@ enum NetworkResult<T> {
     case success(T)
 }
 
-struct Deal {
+struct Deal: Codable {
     let id: Int?
     let requirementSize: Int
 }
@@ -58,20 +60,52 @@ extension Deal: Identifiable { }
 protocol ServerRepository {
     var successfulResponse: Bool { get set }
     
-    func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void)
+    func createDeal(requirementSize: Int, onComplete: @escaping (NetworkResult<Deal>) -> Void)
 }
 
 struct StubServerRepository: ServerRepository {
     var successfulResponse: Bool = true
     static var dealCount = 0
     
-    func createDeal(requirementSize: Int, onComplete: (NetworkResult<Deal>) -> Void) {
+    func createDeal(requirementSize: Int, onComplete: @escaping (NetworkResult<Deal>) -> Void) {
         if successfulResponse {
             StubServerRepository.dealCount += 1
             onComplete(.success(Deal(id: StubServerRepository.dealCount, requirementSize: requirementSize)))
         } else {
             onComplete(.error)
         }
+    }
+}
+
+struct LeasingActivityServerRepository: ServerRepository {
+    var successfulResponse: Bool = true
+    
+    func createDeal(requirementSize: Int, onComplete: @escaping (NetworkResult<Deal>) -> Void) {
+        let url = URL(string: "http://localhost:8080/deals")!
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        
+        let params = [
+            "requirementSize": requirementSize
+        ]
+        request.httpBody = try! JSONSerialization.data(withJSONObject: params, options: [])
+
+        let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                onComplete(.error)
+                return
+            }
+            
+            do {
+                let deal = try JSONDecoder().decode(Deal.self, from: data)
+                onComplete(.success(deal))
+            } catch {
+                print(error)
+            }
+        }
+        
+        urlSession.resume()
     }
 }
 
@@ -94,5 +128,5 @@ struct DealsView: View {
     }
 }
 
-let dealShell = DealShell(repository: StubServerRepository())
+let dealShell = DealShell(repository: LeasingActivityServerRepository())
 let observableDealShell = ObservableDealShell()
