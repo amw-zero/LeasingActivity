@@ -26,16 +26,13 @@ extension Deal: Identifiable { }
 struct LeasingActivityServerRepository: ServerRepository {
     var successfulResponse: Bool = true
     
-    func createDeal(requirementSize: Int, onComplete: @escaping (NetworkResult<Deal>) -> Void) {
+    func createDeal(data: Data, onComplete: @escaping (NetworkResult<Deal>) -> Void) {
         let url = URL(string: "http://localhost:8080/deals")!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         
-        let params = [
-            "requirementSize": requirementSize
-        ]
-        request.httpBody = try! JSONSerialization.data(withJSONObject: params, options: [])
+        request.httpBody = data
 
         let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
