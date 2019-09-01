@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "LeasingActivityBehavior",
+        "repositoryURL": "/Users/alexweisberger/code/LeasingActivityBehavior",
+        "state": {
+          "branch": null,
+          "revision": "02a9a015e513d2ec91500e11e214c0709a71663c",
+          "version": "1.0.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

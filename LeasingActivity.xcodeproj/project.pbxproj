@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,7 @@
 		A51FEBC7230643930050188D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A51FEBC5230643930050188D /* LaunchScreen.storyboard */; };
 		A51FEBD2230643930050188D /* LeasingActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51FEBD1230643930050188D /* LeasingActivityTests.swift */; };
 		A51FEBDD230643930050188D /* LeasingActivityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51FEBDC230643930050188D /* LeasingActivityUITests.swift */; };
+		A56A426C231B40E200BAA67F /* LeasingActivityBehavior in Frameworks */ = {isa = PBXBuildFile; productRef = A56A426B231B40E200BAA67F /* LeasingActivityBehavior */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A56A426C231B40E200BAA67F /* LeasingActivityBehavior in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +154,9 @@
 			dependencies = (
 			);
 			name = LeasingActivity;
+			packageProductDependencies = (
+				A56A426B231B40E200BAA67F /* LeasingActivityBehavior */,
+			);
 			productName = LeasingActivity;
 			productReference = A51FEBB7230643920050188D /* LeasingActivity.app */;
 			productType = "com.apple.product-type.application";
@@ -224,6 +229,9 @@
 				Base,
 			);
 			mainGroup = A51FEBAE230643920050188D;
+			packageReferences = (
+				A56A426A231B40E200BAA67F /* XCRemoteSwiftPackageReference "LeasingActivityBehavior" */,
+			);
 			productRefGroup = A51FEBB8230643920050188D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -586,6 +594,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A56A426A231B40E200BAA67F /* XCRemoteSwiftPackageReference "LeasingActivityBehavior" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "file:///Users/alexweisberger/code/LeasingActivityBehavior";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A56A426B231B40E200BAA67F /* LeasingActivityBehavior */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A56A426A231B40E200BAA67F /* XCRemoteSwiftPackageReference "LeasingActivityBehavior" */;
+			productName = LeasingActivityBehavior;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A51FEBAF230643920050188D /* Project object */;
 }
