@@ -23,33 +23,23 @@ class ObservableDealShell: ObservableObject {
 
 extension Deal: Identifiable { }
 
-struct LeasingActivityServerRepository: ServerRepository {
-    var successfulResponse: Bool = true
+func LeasingActivityServerLinkage(data: Data, onComplete: @escaping (NetworkResult<Data>) -> Void) {
+    let url = URL(string: "http://localhost:8080/deals")!
+    var request = URLRequest(url: url)
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpMethod = "POST"
     
-    func createDeal(data: Data, onComplete: @escaping (NetworkResult<Deal>) -> Void) {
-        let url = URL(string: "http://localhost:8080/deals")!
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
-        
-        request.httpBody = data
+    request.httpBody = data
 
-        let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                onComplete(.error)
-                return
-            }
-            
-            do {
-                let deal = try JSONDecoder().decode(Deal.self, from: data)
-                onComplete(.success(deal))
-            } catch {
-                print(error)
-            }
+    let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
+        guard let data = data, error == nil else {
+            onComplete(.error)
+            return
         }
-        
-        urlSession.resume()
+        onComplete(.success(data))
     }
+    
+    urlSession.resume()
 }
 
 struct DealsView: View {
@@ -71,5 +61,5 @@ struct DealsView: View {
     }
 }
 
-let dealShell = DealShell(repository: LeasingActivityServerRepository())
+let dealShell = DealShell(serverLinkage: LeasingActivityServerLinkage)
 let observableDealShell = ObservableDealShell()
