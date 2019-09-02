@@ -27,12 +27,11 @@ func createDeal(onRequest req: Request) ->
     }
 }
 
-
 final class DealController {
     func create(_ req: Request) throws -> Future<Data> {
         let p = req.eventLoop.newPromise(of: Data.self)
         if let data = req.http.body.data {
-            DealServer().createDeal(data: data, repository: createDeal(onRequest: req)) { result in
+            DealServer(repository: createDeal(onRequest: req)).createDeal(data: data) { result in
                 switch result {
                 case let .success(dealData):
                     p.succeed(result: dealData)
