@@ -27,11 +27,26 @@ func createDeal(onRequest req: Request) ->
     }
 }
 
+func findDeals(onRequest req: Request) -> (@escaping DealServer.DealsFunc) -> Void {
+    return { onComplete in
+        let dealQuery = Deal.query(on: req).all()
+        dealQuery.whenSuccess { deals in
+            onComplete(deals.map {
+                LeasingActivityBehavior.Deal(id: $0.id, requirementSize: $0.requirementSize)
+            })
+        }
+        dealQuery.whenFailure { _ in }
+    }
+}
+
 final class DealController {
     func create(_ req: Request) throws -> Future<Data> {
         let p = req.eventLoop.newPromise(of: Data.self)
         if let data = req.http.body.data {
-            DealServer(repository: createDeal(onRequest: req)).createDeal(data: data) { result in
+            DealServer(
+                createRepository: createDeal(onRequest: req),
+                indexRepository: { _ in }
+            ).createDeal(data: data) { result in
                 switch result {
                 case let .success(dealData):
                     p.succeed(result: dealData)
@@ -41,6 +56,23 @@ final class DealController {
             }
         } else {
             p.fail(error: DealError.error)
+        }
+        
+        return p.futureResult
+    }
+    
+    func index(_ req: Request) throws -> Future<Data> {
+        let p = req.eventLoop.newPromise(of: Data.self)
+        DealServer(
+            createRepository: { _, _ in },
+            indexRepository: findDeals(onRequest: req)
+        ).viewDeals { result in
+            switch result {
+            case let .success(dealData):
+                p.succeed(result: dealData)
+            case .error:
+                p.fail(error: DealError.error)
+            }
         }
         
         return p.futureResult

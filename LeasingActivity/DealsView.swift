@@ -44,6 +44,23 @@ struct LeasingActivityServerRepository: ServerRepository {
         
         urlSession.resume()
     }
+    
+    func viewDeals(onComplete: @escaping (NetworkResult<Data>) -> Void) {
+        let url = URL(string: "http://localhost:8080/deals")!
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "GET"
+        
+        let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                onComplete(.error)
+                return
+            }
+            onComplete(.success(data))
+        }
+        
+        urlSession.resume()
+    }
 }
 
 struct DealsView: View {
@@ -57,7 +74,7 @@ struct DealsView: View {
             List(observed.deals) { deal in
                 Text(self.dealDescription(for: deal))
             }
-        }
+        }.onAppear { dealShell.viewDeals() }
     }
     
     func dealDescription(for deal: Deal) -> String {
