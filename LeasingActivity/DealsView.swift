@@ -23,43 +23,50 @@ class ObservableDealShell: ObservableObject {
 
 extension Deal: Identifiable { }
 
+func makeRequest(
+    _ path: String,
+    method: String = "GET",
+    body: Data? = nil,
+    onComplete: @escaping (NetworkResult<Data>) -> Void
+) {
+    let url = URL(string: path)!
+    var request = URLRequest(url: url)
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpMethod = method
+    
+    if let body = body {
+        request.httpBody = body
+    }
+
+    let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
+        guard let data = data, error == nil else {
+            onComplete(.error)
+            return
+        }
+        onComplete(.success(data))
+    }
+    
+    urlSession.resume()
+}
+
 struct LeasingActivityServerRepository: ServerRepository {
     var successfulResponse: Bool = true
+    static let dealsEndpoint = "http://localhost:8080/deals"
     
     func createDeal(data: Data, onComplete: @escaping (NetworkResult<Data>) -> Void) {
-        let url = URL(string: "http://localhost:8080/deals")!
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
-        
-        request.httpBody = data
-
-        let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                onComplete(.error)
-                return
-            }
-            onComplete(.success(data))
-        }
-        
-        urlSession.resume()
+        makeRequest(
+            LeasingActivityServerRepository.dealsEndpoint,
+            method: "POST",
+            body: data,
+            onComplete: onComplete
+        )
     }
     
     func viewDeals(onComplete: @escaping (NetworkResult<Data>) -> Void) {
-        let url = URL(string: "http://localhost:8080/deals")!
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "GET"
-        
-        let urlSession = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                onComplete(.error)
-                return
-            }
-            onComplete(.success(data))
-        }
-        
-        urlSession.resume()
+        makeRequest(
+            LeasingActivityServerRepository.dealsEndpoint,
+            onComplete: onComplete
+        )
     }
 }
 
@@ -71,8 +78,12 @@ struct DealsView: View {
             Button(action: { dealShell.createDeal(requirementSize: 200) }) {
                 Text("Create a Deal")
             }
-            List(observed.deals) { deal in
-                Text(self.dealDescription(for: deal))
+            if observed.deals.count == 0 {
+                Text("You have no deals. Create some.")
+            } else {
+                List(observed.deals) { deal in
+                    Text(self.dealDescription(for: deal))
+                }
             }
         }.onAppear { dealShell.viewDeals() }
     }
