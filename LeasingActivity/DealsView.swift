@@ -93,12 +93,13 @@ struct DealsView: View {
     }
     
     func dealDescription(for deal: Deal) -> String {
-        return "Deal Id: \(deal.id ?? -1), requirementSize: \(deal.requirementSize)"
+        return "\(deal.tenantName) | \(deal.requirementSize)sf"
     }
 }
 
 struct DealForm: View {
     @State var requirementSize: String = ""
+    @State var tenantName: String = ""
 
     static var numberFormatter: NumberFormatter {
         let f = NumberFormatter()
@@ -110,11 +111,15 @@ struct DealForm: View {
             Form {
                 Section {
                     TextField("Requirement Size", text: $requirementSize)
+                    TextField("Tenant Name", text: $tenantName)
                 }
                 Section {
                     Button("Save") {
                         if !self.requirementSize.isEmpty, let size = Int(self.requirementSize) {
-                            dealShell.createDeal(requirementSize: size)
+                            dealShell.createDeal(
+                                requirementSize: size,
+                                tenantName: self.tenantName
+                            )
                         }
                     }
                 }

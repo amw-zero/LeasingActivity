@@ -16,10 +16,10 @@ extension Data: ResponseEncodable {
 func createDeal(onRequest req: Request) ->
     (LeasingActivityBehavior.Deal, @escaping (LeasingActivityBehavior.Deal) -> Void) -> Void {
     return { deal, onComplete in
-        let dealRecord = Deal(requirementSize: deal.requirementSize)
+        let dealRecord = Deal(requirementSize: deal.requirementSize, tenantName: deal.tenantName)
         let saveFuture = dealRecord.save(on: req)
         saveFuture.whenSuccess { d in
-            onComplete(LeasingActivityBehavior.Deal(id: d.id, requirementSize: d.requirementSize))
+            onComplete(LeasingActivityBehavior.Deal(id: d.id, requirementSize: d.requirementSize, tenantName: d.tenantName))
         }
         saveFuture.whenFailure { error in
             
@@ -32,7 +32,7 @@ func findDeals(onRequest req: Request) -> (@escaping DealServer.DealsFunc) -> Vo
         let dealQuery = Deal.query(on: req).all()
         dealQuery.whenSuccess { deals in
             onComplete(deals.map {
-                LeasingActivityBehavior.Deal(id: $0.id, requirementSize: $0.requirementSize)
+                LeasingActivityBehavior.Deal(id: $0.id, requirementSize: $0.requirementSize, tenantName: $0.tenantName)
             })
         }
         dealQuery.whenFailure { _ in }
