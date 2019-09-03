@@ -74,22 +74,52 @@ struct DealsView: View {
     @ObservedObject var observed = observableDealShell
     
     var body: some View {
-        VStack {
-            Button(action: { dealShell.createDeal(requirementSize: 200) }) {
-                Text("Create a Deal")
-            }
-            if observed.deals.count == 0 {
-                Text("You have no deals. Create some.")
-            } else {
-                List(observed.deals) { deal in
-                    Text(self.dealDescription(for: deal))
+        NavigationView {
+            VStack {
+                if observed.deals.count == 0 {
+                    Text("You have no deals. Create some.")
+                } else {
+                    List(observed.deals) { deal in
+                        Text(self.dealDescription(for: deal))
+                    }
+                }
+                NavigationLink(destination: DealForm()) {
+                    Text("Create Deal")
                 }
             }
-        }.onAppear { dealShell.viewDeals() }
+            .onAppear { dealShell.viewDeals() }
+            .navigationBarTitle("Leasing Activity")
+        }
     }
     
     func dealDescription(for deal: Deal) -> String {
         return "Deal Id: \(deal.id ?? -1), requirementSize: \(deal.requirementSize)"
+    }
+}
+
+struct DealForm: View {
+    @State var requirementSize: String = ""
+
+    static var numberFormatter: NumberFormatter {
+        let f = NumberFormatter()
+        f.numberStyle = NumberFormatter.Style.none
+        return f
+    }
+    
+    var body: some View {
+            Form {
+                Section {
+                    TextField("Requirement Size", text: $requirementSize)
+                }
+                Section {
+                    Button("Save") {
+                        if !self.requirementSize.isEmpty, let size = Int(self.requirementSize) {
+                            dealShell.createDeal(requirementSize: size)
+                        }
+                    }
+                }
+            }
+            .navigationBarTitle("Create a Deal")
     }
 }
 
