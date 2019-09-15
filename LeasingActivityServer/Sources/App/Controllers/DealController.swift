@@ -73,7 +73,7 @@ final class DealController {
         DealServer(
             createRepository: { _, _ in },
             indexRepository: findDeals(onConnectable: req)
-        ).viewDeals(filter: .all) { result in
+        ).viewDeals(queryParams: req.http.url.query) { result in
             switch result {
             case let .success(dealData):
                 p.succeed(result: dealData)

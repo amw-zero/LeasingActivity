@@ -62,23 +62,38 @@ struct LeasingActivityServerRepository: ServerRepository {
         )
     }
     
-    func viewDeals(onComplete: @escaping (NetworkResult<Data>) -> Void) {
-        makeRequest(
-            LeasingActivityServerRepository.dealsEndpoint,
-            onComplete: onComplete
-        )
+    func viewDeals(queryParams: String?, onComplete: @escaping (NetworkResult<Data>) -> Void) {
+        var endpoint = LeasingActivityServerRepository.dealsEndpoint
+        if let queryParams = queryParams {
+            endpoint += "?\(queryParams)"
+        }
+        
+        makeRequest(endpoint, onComplete: onComplete)
     }
 }
 
 struct DealsView: View {
     @ObservedObject var observed = observableDealShell
+    @State var tenantNameFilter: String = ""
     
     var body: some View {
         NavigationView {
             VStack {
                 if observed.deals.count == 0 {
+                    Button("Clear Filter") {
+                        dealShell.viewDeals()
+                    }
                     Text("You have no deals. Create some.")
                 } else {
+                    HStack {
+                        TextField("Filter by Tenant Name", text: $tenantNameFilter)
+                        Button("Filter") {
+                            dealShell.viewDeals(filter: .tenantName(self.tenantNameFilter))
+                        }
+                    }.padding()
+                    Button("Clear Filter") {
+                        dealShell.viewDeals()
+                    }
                     List(observed.deals) { deal in
                         Text(self.dealDescription(for: deal))
                     }
