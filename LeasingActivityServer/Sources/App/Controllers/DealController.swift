@@ -13,11 +13,11 @@ extension Data: ResponseEncodable {
     }
 }
 
-func createDeal(onRequest req: Request) ->
+func createDeal(onConnectable conn: DatabaseConnectable) ->
     (LeasingActivityBehavior.Deal, @escaping (LeasingActivityBehavior.Deal) -> Void) -> Void {
     return { deal, onComplete in
         let dealRecord = Deal(requirementSize: deal.requirementSize, tenantName: deal.tenantName)
-        let saveFuture = dealRecord.save(on: req)
+        let saveFuture = dealRecord.save(on: conn)
         saveFuture.whenSuccess { d in
             onComplete(LeasingActivityBehavior.Deal(id: d.id, requirementSize: d.requirementSize, tenantName: d.tenantName))
         }
@@ -27,9 +27,16 @@ func createDeal(onRequest req: Request) ->
     }
 }
 
-func findDeals(onRequest req: Request) -> (@escaping DealServer.DealsFunc) -> Void {
-    return { onComplete in
-        let dealQuery = Deal.query(on: req).all()
+func findDeals(onConnectable conn: DatabaseConnectable) -> (DealFilter, @escaping DealServer.DealsFunc) -> Void {
+    return { filter, onComplete in
+        let dealQuery: Future<[Deal]>
+        switch filter {
+        case .all:
+            dealQuery = Deal.query(on: conn).all()
+        case let .tenantName(tenantName):
+            dealQuery = Deal.query(on: conn).filter(\.tenantName, .equal, tenantName).all()
+        }
+        
         dealQuery.whenSuccess { deals in
             onComplete(deals.map {
                 LeasingActivityBehavior.Deal(id: $0.id, requirementSize: $0.requirementSize, tenantName: $0.tenantName)
@@ -44,8 +51,8 @@ final class DealController {
         let p = req.eventLoop.newPromise(of: Data.self)
         if let data = req.http.body.data {
             DealServer(
-                createRepository: createDeal(onRequest: req),
-                indexRepository: { _ in }
+                createRepository: createDeal(onConnectable: req),
+                indexRepository: { _, _ in }
             ).createDeal(data: data) { result in
                 switch result {
                 case let .success(dealData):
@@ -65,8 +72,8 @@ final class DealController {
         let p = req.eventLoop.newPromise(of: Data.self)
         DealServer(
             createRepository: { _, _ in },
-            indexRepository: findDeals(onRequest: req)
-        ).viewDeals { result in
+            indexRepository: findDeals(onConnectable: req)
+        ).viewDeals(filter: .all) { result in
             switch result {
             case let .success(dealData):
                 p.succeed(result: dealData)

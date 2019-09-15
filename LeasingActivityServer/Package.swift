@@ -14,7 +14,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-sqlite.git", from: "3.0.0"),
         
         // LeasingActivity Behavior
-        .package(url: "file:///Users/alexweisberger/code/LeasingActivityBehavior", from: "1.0.0")
+        .package(url: "file:///Users/alexweisberger/code/LeasingActivityBehavior", .branch("filter-by-tenant-name"))
     ],
     targets: [
         .target(name: "App", dependencies: ["FluentSQLite", "Vapor", "LeasingActivityBehavior"]),

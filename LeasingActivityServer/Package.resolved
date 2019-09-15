@@ -68,9 +68,9 @@
         "package": "LeasingActivityBehavior",
         "repositoryURL": "file:///Users/alexweisberger/code/LeasingActivityBehavior",
         "state": {
-          "branch": null,
-          "revision": "ea992265984486e92e86afbcb0f1a29432514639",
-          "version": "1.0.11"
+          "branch": "filter-by-tenant-name",
+          "revision": "8334cc8e766f683da92123d250f2f87517650558",
+          "version": null
         }
       },
       {
