@@ -133,23 +133,23 @@ struct DealForm: View {
     }
     
     var body: some View {
-            Form {
-                Section {
-                    TextField("Requirement Size", text: $requirementSize)
-                    TextField("Tenant Name", text: $tenantName)
-                }
-                Section {
-                    Button("Save") {
-                        if !self.requirementSize.isEmpty, let size = Int(self.requirementSize) {
-                            dealShell.createDeal(
-                                requirementSize: size,
-                                tenantName: self.tenantName
-                            )
-                        }
+        Form {
+            Section {
+                TextField("Requirement Size", text: $requirementSize)
+                TextField("Tenant Name", text: $tenantName)
+            }
+            Section {
+                Button("Save") {
+                    if !self.requirementSize.isEmpty, let size = Int(self.requirementSize) {
+                        dealShell.createDeal(
+                            requirementSize: size,
+                            tenantName: self.tenantName
+                        )
                     }
                 }
             }
-            .navigationBarTitle("Create a Deal")
+        }
+        .navigationBarTitle("Create a Deal")
     }
 }
 
