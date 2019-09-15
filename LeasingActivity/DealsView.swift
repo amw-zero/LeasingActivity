@@ -73,7 +73,7 @@ struct LeasingActivityServerRepository: ServerRepository {
 }
 
 struct DealsView: View {
-    @ObservedObject var observed = observableDealShell
+    @EnvironmentObject var observed: ObservableDealShell
     @State var tenantNameFilter: String = ""
     
     var body: some View {
