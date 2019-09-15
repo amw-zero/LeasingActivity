@@ -74,7 +74,6 @@ struct LeasingActivityServerRepository: ServerRepository {
 
 struct DealsView: View {
     @EnvironmentObject var observed: ObservableDealShell
-    @State var tenantNameFilter: String = ""
     
     var body: some View {
         NavigationView {
@@ -85,18 +84,7 @@ struct DealsView: View {
                     }
                     Text("You have no deals. Create some.")
                 } else {
-                    HStack {
-                        TextField("Filter by Tenant Name", text: $tenantNameFilter)
-                        Button("Filter") {
-                            dealShell.viewDeals(filter: .tenantName(self.tenantNameFilter))
-                        }
-                    }.padding()
-                    Button("Clear Filter") {
-                        dealShell.viewDeals()
-                    }
-                    List(observed.deals) { deal in
-                        Text(self.dealDescription(for: deal))
-                    }
+                    FilterableDealList()
                 }
                 NavigationLink(destination: DealForm()) {
                     Text("Create Deal")
@@ -104,6 +92,28 @@ struct DealsView: View {
             }
             .onAppear { dealShell.viewDeals() }
             .navigationBarTitle("Leasing Activity")
+        }
+    }
+}
+
+struct FilterableDealList: View {
+    @EnvironmentObject var observed: ObservableDealShell
+    @State var tenantNameFilter: String = ""
+    
+    var body: some View {
+        Group {
+            HStack {
+                TextField("Filter by Tenant Name", text: $tenantNameFilter)
+                Button("Filter") {
+                    dealShell.viewDeals(filter: .tenantName(self.tenantNameFilter))
+                }
+            }.padding()
+            Button("Clear Filter") {
+                dealShell.viewDeals()
+            }
+            List(observed.deals) { deal in
+                Text(self.dealDescription(for: deal))
+            }
         }
     }
     
